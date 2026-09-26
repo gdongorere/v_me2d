@@ -1,0 +1,15 @@
+{
+  "comment": "Add these dependencies to your existing package.json",
+  "dependencies": {
+    "cannon-es": "^0.20.0",
+    "rxjs": "^7.8.0"
+  },
+  "devDependencies": {
+    "@types/three": "^r128.0.0"
+  },
+  "scripts": {
+    "build:apartment-data": "node scripts/export-apartment-data.mjs",
+    "build:blender-apartment": "blender --background --python tools/blender/build_apartment.py",
+    "build:apartment": "npm run build:apartment-data && npm run build:blender-apartment"
+  }
+}

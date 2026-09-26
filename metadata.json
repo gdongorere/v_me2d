@@ -1,0 +1,9 @@
+{
+  "name": "Virtual Me",
+  "description": "Create engaging content with your custom 3D Virtual Me avatar",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

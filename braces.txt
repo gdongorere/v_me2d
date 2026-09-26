@@ -1,0 +1,316 @@
+1:import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, HostListener, NgZone } from '@angular/core';
+2:import { CommonModule } from '@angular/common';
+3:import { FormsModule } from '@angular/forms';
+5:import { ThreeSceneService } from './services/three-scene.service';
+6:import { FaceTrackingService } from './services/face-tracking.service';
+7:import { ModelStorageService, StoredModel } from './services/model-storage.service';
+8:import { AudioAnalyzerService } from './services/audio-analyzer.service';
+9:import { PerformanceMonitorService } from './services/performance-monitor.service';
+11:import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+12:import { filter } from 'rxjs';
+14:@Component({
+36:            <p class="text-neutral-300 max-w-md">{{ cameraError }}</p>
+47:              {{ isUpdating ? 'Updating...' : 'Update Now' }}
+64:                   <div class="text-xs text-neutral-300 group-hover:text-white truncate flex-1">{{ model.name }}</div>
+73:                   <div class="text-xs text-neutral-300 group-hover:text-white truncate flex-1">{{ model.name }}</div>
+107:                   <span>{{ audioSensitivity | number:'1.1-1' }}</span>
+121:                   <span>{{ expr.label }}</span>
+122:                   <span class="text-neutral-400 text-[10px]">{{ i + 1 }}</span>
+178:                   <span>{{ smoothing | number:'1.1-1' }}</span>
+193:                   <option *ngFor="let bg of backgrounds" [value]="bg.id">{{ bg.name }}</option>
+227:                 {{ isRecording ? 'Stop Recording' : 'Start Recording' }}
+232:               {{ isFullscreen ? 'Exit Full Screen' : 'Go Full Screen' }}
+249:             @if (fps$ | async; as fps) {
+252:                 <span [class.text-red-400]="fps < 25" [class.text-emerald-400]="fps >= 25">{{ fps }}</span>
+254:             }
+255:             @if (memoryUsage$ | async; as mem) {
+258:                 <span>{{ mem }} MB</span>
+260:             }
+267:})
+268:export class AppComponent implements AfterViewInit, OnDestroy {
+283:    { id: 'none', name: 'None (Transparent)' },
+284:    { id: 'greenScreen', name: 'Green Screen' },
+285:    { id: 'streamingRoom', name: 'Streaming Room' },
+286:    { id: 'neonCity', name: 'Neon City' },
+287:    { id: 'nature', name: 'Nature' },
+326:  private targetBlendshapes: Record<string, number> = {};
+327:  private currentBlendshapes: Record<string, number> = {};
+328:  private rawBlendshapes: Record<string, number> = {};
+329:  private blendshapeOffsets: Record<string, number> = {};
+331:  private targetPoseRotations: Record<string, any> = {};
+332:  private currentPoseRotations: Record<string, any> = {};
+335:  private currentFaceData: any = { pupil: { x: 0, y: 0 } };
+340:  bundledModels: { id: string, name: string, url: string }[] = [];
+351:    { name: 'happy', label: 'Joy', active: false },
+352:    { name: 'angry', label: 'Angry', active: false },
+353:    { name: 'sad', label: 'Sorrow', active: false },
+354:    { name: 'relaxed', label: 'Fun', active: false },
+355:    { name: 'surprised', label: 'Surprise', active: false },
+373:  ) {
+377:    if (this.swUpdate.isEnabled) {
+380:        .subscribe(() => {
+382:        });
+385:      setInterval(() => {
+386:         if (navigator.onLine) {
+388:         }
+389:      }, 1000 * 60 * 60);
+390:    }
+391:  }
+393:  installUpdate() {
+395:    this.swUpdate.activateUpdate().then(() => {
+397:    });
+398:  }
+400:  async ngOnInit() {
+404:    window.addEventListener('beforeinstallprompt', (e) => {
+407:    });
+408:  }
+410:  async fetchBundledModels() {
+411:    try {
+413:      if (response.ok) {
+415:      }
+416:    } catch (e) {
+418:    }
+419:  }
+421:  loadBundledModel(url: string) {
+423:  }
+425:  async refreshModels() {
+426:    try {
+428:    } catch (e) {
+430:    }
+431:  }
+433:  ngAfterViewInit() {
+443:  }
+446:  handleKeyDown(event: KeyboardEvent) {
+447:    const keyMap: { [key: string]: number } = {
+449:    };
+450:    if (keyMap[event.key] !== undefined) {
+453:    }
+454:  }
+456:  toggleExpression(name: string) {
+458:    if (expr) {
+461:    }
+462:  }
+464:  async toggleAudioLipSync() {
+466:    if (this.useAudioLipSync && this.isMicrophoneEnabled) {
+469:    } else {
+471:    }
+472:  }
+474:  onAudioSensitivityChange() {
+476:  }
+478:  onCameraPresetChange() {
+480:  }
+482:  onLightingPresetChange() {
+484:  }
+486:  toggleSunglasses() {
+489:  }
+491:  ngOnDestroy() {
+495:  }
+497:  private onDeviceOrientation(event: DeviceOrientationEvent) {
+502:    if (event.beta !== null && event.gamma !== null) {
+508:    }
+509:  }
+511:  toggleSelfieMode() {
+513:    if (this.selfieMode) {
+515:      if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+517:          .then((permissionState: string) => {
+518:            if (permissionState === 'granted') {
+520:            } else {
+523:            }
+524:          })
+526:      } else {
+528:      }
+529:    } else {
+532:    }
+533:  }
+535:  updateAtmosphere() {
+537:  }
+539:  async onFileSelected(event: any) {
+541:    if (file) {
+542:      try {
+545:      } catch (e) {
+547:      }
+551:    }
+552:  }
+554:  async loadSavedModel(id: string) {
+555:    try {
+560:    } catch (e) {
+562:    }
+563:  }
+565:  async deleteModel(id: string, event: Event) {
+567:    try {
+570:    } catch (e) {
+572:    }
+573:  }
+575:  async toggleFullscreen() {
+576:    if (!document.fullscreenElement) {
+580:    } else {
+582:    }
+583:  }
+585:  private onFullscreenChange() {
+587:    setTimeout(() => {
+589:    }, 100);
+590:  }
+592:  onBackgroundChange() {
+594:  }
+596:  toggleMirror() {
+598:  }
+600:  toggleCameraView() {
+602:  }
+604:  toggleRecording() {
+605:    if (this.isRecording) {
+608:    } else {
+613:      if (userStream && this.isMicrophoneEnabled) {
+614:          userStream.getAudioTracks().forEach(track => {
+615:             if (track.enabled) {
+617:             }
+618:          });
+619:      }
+621:      let options: any = { mimeType: 'video/webm; codecs=vp9', videoBitsPerSecond: 3000000 }; // 3 Mbps for high quality
+622:      if (!(window as any).MediaRecorder.isTypeSupported(options.mimeType)) {
+623:          options = { mimeType: 'video/webm', videoBitsPerSecond: 3000000 };
+624:      }
+627:      this.mediaRecorder.ondataavailable = (e: any) => {
+629:      };
+630:      this.mediaRecorder.onstop = () => {
+631:        const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+635:        a.download = `virtual-me-recording-${Date.now()}.webm`;
+640:      };
+643:    }
+644:  }
+646:  toggleCameraState() {
+649:  }
+651:  async toggleMicrophoneState() {
+654:      if (this.isMicrophoneEnabled && this.useAudioLipSync) {
+657:      } else if (!this.isMicrophoneEnabled) {
+659:      }
+660:  }
+662:  installApp() {
+663:      if (this.deferredInstallPrompt) {
+665:          this.deferredInstallPrompt.userChoice.then((choiceResult: any) => {
+666:              if (choiceResult.outcome === 'accepted') {
+668:              }
+669:          });
+670:      }
+671:  }
+673:  calibrateFace() {
+679:    for (const key of Object.keys(this.rawBlendshapes)) {
+681:    }
+685:    setTimeout(() => {
+687:    }, 150);
+688:  }
+690:  private startFaceTracking() {
+693:      (faceResults, poseResults, handResults) => {
+694:        if (faceResults?.faceLandmarks && faceResults.faceLandmarks.length > 0) {
+697:            {
+701:              imageSize: { width: 640, height: 480 }
+702:            }
+704:          if (solvedFace) {
+707:             if (solvedFace.head) {
+711:             }
+712:          }
+713:        }
+715:        if (faceResults?.facialTransformationMatrixes && faceResults.facialTransformationMatrixes.length > 0) {
+726:        }
+728:        if (faceResults?.faceBlendshapes && faceResults.faceBlendshapes.length > 0) {
+730:          blendshapes.forEach((shape: any) => {
+735:            if (nameLower.includes('jaw') || nameLower.includes('mouth')) {
+737:            }
+740:            if (shape.categoryName === 'jawOpen') {
+742:            }
+747:          });
+748:        }
+750:        let mergedPose: any = {};
+752:        if (poseResults?.landmarks?.length > 0 && poseResults?.worldLandmarks?.length > 0) {
+756:            {
+759:            }
+762:          if (solvedPose) {
+773:             if (!leftArmVisible) {
+774:                pose.LeftUpperArm = { x: 0, y: 0, z: 1.25 }; // 1.25 rad outwards = naturally down
+775:                pose.LeftLowerArm = { x: 0, y: 0, z: 0 };
+776:                pose.LeftHand = { x: 0, y: 0, z: 0 };
+777:             }
+778:             if (!rightArmVisible) {
+779:                pose.RightUpperArm = { x: 0, y: 0, z: -1.25 }; // -1.25 rad outwards = naturally down
+780:                pose.RightLowerArm = { x: 0, y: 0, z: 0 };
+781:                pose.RightHand = { x: 0, y: 0, z: 0 };
+782:             }
+783:             if (!bodyVisible) {
+786:             }
+789:          }
+790:        }
+792:        if (handResults?.landmarks?.length > 0) {
+793:            handResults.landmarks.forEach((landmarks: any, index: number) => {
+797:                if (solvedHand) {
+801:                    mergedPose[`${prefix}Hand`] = solvedHand[`${prefix}Wrist`];
+804:                    mergedPose[`${prefix}ThumbProximal`] = solvedHand[`${prefix}ThumbProximal`];
+805:                    mergedPose[`${prefix}ThumbIntermediate`] = solvedHand[`${prefix}ThumbIntermediate`];
+806:                    mergedPose[`${prefix}ThumbDistal`] = solvedHand[`${prefix}ThumbDistal`];
+808:                    mergedPose[`${prefix}IndexProximal`] = solvedHand[`${prefix}IndexProximal`];
+809:                    mergedPose[`${prefix}IndexIntermediate`] = solvedHand[`${prefix}IndexIntermediate`];
+810:                    mergedPose[`${prefix}IndexDistal`] = solvedHand[`${prefix}IndexDistal`];
+812:                    mergedPose[`${prefix}MiddleProximal`] = solvedHand[`${prefix}MiddleProximal`];
+813:                    mergedPose[`${prefix}MiddleIntermediate`] = solvedHand[`${prefix}MiddleIntermediate`];
+814:                    mergedPose[`${prefix}MiddleDistal`] = solvedHand[`${prefix}MiddleDistal`];
+816:                    mergedPose[`${prefix}RingProximal`] = solvedHand[`${prefix}RingProximal`];
+817:                    mergedPose[`${prefix}RingIntermediate`] = solvedHand[`${prefix}RingIntermediate`];
+818:                    mergedPose[`${prefix}RingDistal`] = solvedHand[`${prefix}RingDistal`];
+820:                    mergedPose[`${prefix}LittleProximal`] = solvedHand[`${prefix}LittleProximal`];
+821:                    mergedPose[`${prefix}LittleIntermediate`] = solvedHand[`${prefix}LittleIntermediate`];
+822:                    mergedPose[`${prefix}LittleDistal`] = solvedHand[`${prefix}LittleDistal`];
+823:                }
+824:            });
+825:        }
+827:        if (Object.keys(mergedPose).length > 0) {
+829:        }
+830:      },
+831:      (error) => {
+833:      }
+835:  }
+837:  private lerpAngle(start: number, end: number, t: number): number {
+851:    if (Math.abs(diff) < 0.03) {
+853:    } else if (Math.abs(diff) > 0.1) { // ~5.7 degrees threshold
+855:    }
+858:  }
+860:  private adaptiveLerp(start: number, end: number, t: number, threshold: number = 0.02): number {
+867:    if (Math.abs(diff) < (threshold * 0.5)) {
+869:    } else if (Math.abs(diff) > threshold) {
+871:    }
+873:  }
+875:  private startSmoothUpdateLoop() {
+878:    const loop = (now: number) => {
+886:        if (!this.isCameraEnabled) {
+893:            this.targetPoseRotations = {};
+895:            for (const key of Object.keys(this.targetBlendshapes)) {
+897:            }
+898:        }
+922:      const vrmBlendshapeMap: Record<string, string> = {
+928:      };
+930:      if (this.useAudioLipSync && this.audioAnalyzer.isListening) {
+934:      }
+940:      vrmBlendshapeMap['eyeBlinkLeft'] = `blink${leftSuffix}`;
+941:      vrmBlendshapeMap['eyeBlinkRight'] = `blink${rightSuffix}`;
+951:      const appliedVrmShapes: Record<string, number> = {};
+953:      for (const [name, targetVal] of Object.entries(this.targetBlendshapes)) {
+958:        if (name.toLowerCase().includes('jaw') || name.toLowerCase().includes('mouth')) {
+960:        }
+967:        if (vrmName) {
+969:        }
+970:      }
+973:      for (const [vrmName, val] of Object.entries(appliedVrmShapes)) {
+975:      }
+978:      for (const [boneName, targetEuler] of Object.entries(this.targetPoseRotations)) {
+979:          if (!this.currentPoseRotations[boneName]) {
+981:              this.currentPoseRotations[boneName] = { x: targetEuler.x, y: targetEuler.y, z: targetEuler.z };
+982:          }
+987:      }
+989:      if (Object.keys(this.currentPoseRotations).length > 0) {
+991:      }
+992:    };
+995:  }
+997:  private matrixToEuler(matrix: Float32Array) {
+1004:    if (Math.abs(m13) < 0.99999) {
+1007:    } else {
+1010:    }
+1011:    return { x, y, z };
+1012:  }
+1013:}

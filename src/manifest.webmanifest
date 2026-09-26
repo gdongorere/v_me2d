@@ -1,0 +1,33 @@
+{
+  "name": "Virtual Me",
+  "short_name": "v-me",
+  "description": "Create engaging content with your custom 3D Virtual Me avatar",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#1a1a1a",
+  "theme_color": "#6200ea",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%236200ea' width='192' height='192'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='120' fill='white' font-weight='bold'>V</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%236200ea' width='192' height='192'/><circle cx='96' cy='96' r='40' fill='white'/><text x='96' y='104' text-anchor='middle' font-size='60' fill='%236200ea' font-weight='bold'>V</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["video", "productivity"],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%231a1a1a' width='540' height='720'/><rect fill='%236200ea' width='540' height='80'/><text x='270' y='45' text-anchor='middle' fill='white' font-size='24'>Virtual Me</text></svg>",
+      "sizes": "540x720",
+      "form_factor": "narrow"
+    }
+  ]
+}
