@@ -68,9 +68,7 @@ type CreatorStep = 'body' | 'face' | 'hair' | 'outfit' | 'accessories' | 'animat
         <!-- Step tabs -->
         <div class="flex border-b border-white/10 overflow-x-auto shrink-0">
           <button *ngFor="let s of steps" (click)="currentStep = s.id"
-                  [class.text-white]="currentStep === s.id"
-                  [class.border-indigo-500]="currentStep === s.id"
-                  [class.text-white/40]="currentStep !== s.id"
+                  [ngClass]="currentStep === s.id ? 'text-white border-indigo-500' : 'text-white/40'"
                   class="px-4 py-3 text-sm font-medium border-b-2 border-transparent whitespace-nowrap">
             {{ s.label }}
           </button>
@@ -426,7 +424,7 @@ type CreatorStep = 'body' | 'face' | 'hair' | 'outfit' | 'accessories' | 'animat
           <button (click)="prevStep()" [disabled]="stepIndex === 0" class="btn-secondary disabled:opacity-30">← Back</button>
           <div class="flex gap-2">
             <button (click)="onCancel()" class="btn-secondary">Cancel</button>
-            <button *ngIf="stepIndex < steps.length - 1" (click)="nextStep()" class="btn-primary">Next →</button>
+            <button *ngIf="stepIndex &lt; steps.length - 1" (click)="nextStep()" class="btn-primary">Next →</button>
             <button *ngIf="stepIndex === steps.length - 1" (click)="onSave()" class="btn-primary">Save Character</button>
           </div>
         </div>

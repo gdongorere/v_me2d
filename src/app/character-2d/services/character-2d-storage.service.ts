@@ -345,9 +345,10 @@ export class Character2DStorageService {
       features: {
         ...char1.features,
         // Take select features from char2
-        hair: char2.hair,
         eyes: char2.features.eyes,
       },
+      // Take hair from char2
+      hair: char2.hair,
       created: Date.now(),
       modified: Date.now(),
     };
